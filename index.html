@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang = 'en'>
+    <head>
+        <title>Experiment - Scene similarity</title>
+        <style>
+                                   
+            #left_arena { 
+                position: absolute;                        
+                left: 0;             
+                width: 50%;
+                height: 50%;  
+                display: flex;
+                align-items: center;
+                justify-content: center;   
+                border: 1px solid grey;              
+            }
+            #right_arena {   
+                position: absolute;                 
+                right: 0;                  
+                width: 50%;
+                height: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid grey;     
+            }
+        
+        </style>
+        <script src='jspsych-6.2.0/jspsych.js'></script>
+        <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>        
+        <script src="https://cdn.jsdelivr.net/npm/bowser@2.5.3/es5.min.js"></script>        
+        <script src="js_library/modernizr-custom.js"></script>  
+        <script src="js_library/underscore-min.js"></script> 
+        <script src="js_library/factorial_noRandom.js"></script>      
+        <!-- <script src="jspsych-6.1.0/plugins/jspsych-fullscreen.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-instructions.js"></script> -->
+        <!-- <script src='jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js'></script>
+        <script src='jspsych-6.1.0/plugins/jspsych-html-button-response.js'></script> -->
+        <script src='jspsych-6.2.0/plugins/jspsych-html-likert.js'></script> 
+        <!-- <script src="jspsych-6.1.0/plugins/jspsych-external-html.js"></script>               -->                              
+        <link href='jspsych-6.2.0/css/jspsych.css' rel='stylesheet' type="text/css">
+        <script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-database.js"></script>       
+    </head>
+    <body></body>
+
+    <script type="text/javascript">
+        // Firebase set up
+        var firebaseConfig = {
+            apiKey: "AIzaSyBdaTj6S3xND2qG0_HUN1rrF0GWUh5EP1c",
+            authDomain: "scenewheel-main.firebaseapp.com",
+            databaseURL: "https://scenewheel-main.firebaseio.com",
+            projectId: "scenewheel-main",
+            storageBucket: "scenewheel-main.appspot.com",
+            messagingSenderId: "611149998558",
+            appId: "1:611149998558:web:3650c2da774e6c7433d54f"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    
+        // login anonymous user
+        firebase.auth().signInAnonymously().catch(function(error) {
+            var errorCode = error.code;
+            var errorMessage = error.message;
+        });
+        
+  
+    </script>
+
+    <script>
+        
+        // * browser info * //        
+        const browser = bowser.getParser(window.navigator.userAgent);
+        var browser_info = browser.getBrowser();
+               
+        // * image host * //
+        const img_host = '';//'https://macklab.dev/resources/sceneWheel/';
+
+        // * wheel info * //        
+        var wheel_number = '01';
+
+        // * condition set up * //  
+        var pair = [];
+        var img_num = _.range(0,360,30);
+        var identical_pair = _.sample(img_num,2); // catch trials
+        pair.push([identical_pair[0],identical_pair[0]]);
+        pair.push([identical_pair[1],identical_pair[1]]);        
+        for (var i = 0; i < img_num.length - 1; i++) {            
+            for (var j = i + 1; j < img_num.length; j++) {
+                pair.push([img_num[i], img_num[j]]);
+            }
+        };
+        var factors = {
+            radius: ['02', '04', '08', '16', '32'],            
+            stim_list: pair
+        };
+        var e_cond = factorial_noRandom(factors);
+        // select one to be preseted left
+        var left_item = _.shuffle(Array(e_cond.length/2).fill(0).concat(Array(e_cond.length/2).fill(1)));
+        // specify path
+        for (var i=0; i<e_cond.length; i++){
+            e_cond[i].left_item_idx = left_item[i];
+            e_cond[i].stim_path_left = [
+                'stimuli/'+'Wheel'+wheel_number+'/wheel'+wheel_number+'_r'+e_cond[i].radius+'/'+
+                ("00000"+e_cond[i].stim_list[left_item[i]]).slice(-6)+'.webp'
+            ];
+            e_cond[i].stim_path_right = [
+                'stimuli/'+'Wheel'+wheel_number+'/wheel'+wheel_number+'_r'+e_cond[i].radius+'/'+
+                ("00000"+e_cond[i].stim_list[(left_item[i]+1)%2]).slice(-6)+'.webp'
+            ];
+        };
+
+        // * preload images *//        
+        var stimuli = [];
+        for (i=0; i <e_cond.length; i++){
+            stimuli.push(
+                img_host+e_cond[i].stim_path_left,
+                img_host+e_cond[i].stim_path_right,
+                );
+        }
+        // var inst_img = [];
+        // for (i=0; i<5; i++){
+        //     inst_img.push(img_host+'instruction_difficulty/Slide'+(i+1)+'.jpeg');
+        // }
+        // var preload_images = [memory_item, handle_bar, handle_nobar, inst_img];
+
+        
+        // ************** Display set up *************** //
+        // * Consent * //
+        // var consent_inst = {
+        //     type: 'html-button-response',
+        //     stimulus: html='<p style="color: black; font-size: 20px;">'
+        //         +'We would like to get your consent before starting the experiment.</p>',
+        //     choices: ['Consent page'], 
+        //     data: {disp_type: 'consent-instruction'}
+        // }
+        // var check_consent = function(elem) {
+        //     if (document.getElementById('radio_agree').checked) {                             
+        //         return true;
+        //     } else {
+        //         alert("If you wish to participate, you must check the box next to the statement 'I agree.'");
+        //         return false;
+        //     }
+        //     return false;
+        // };
+        // var consent_page = {
+        //     type: 'external-html',
+        //     url: "materials/online_consent.html",
+        //     cont_btn: "start",
+        //     check_fn: check_consent,
+        //     data: {disp_type: 'online_consent_form'}
+        // }        
+
+        // // * Instruction * //        
+        // var general_instruction = {
+        //     type: 'instructions',
+        //     pages: [
+        //         '<img src="'+inst_img[0]+'" style="width:90%">',
+        //         '<img src="'+inst_img[1]+'" style="width:90%">',
+        //         '<img src="'+inst_img[2]+'" style="width:90%">',
+        //         '<img src="'+inst_img[3]+'" style="width:90%">',
+        //         '<img src="'+inst_img[4]+'" style="width:90%">'
+        //     ],
+        //     show_clickable_nav: true,
+        //     show_page_number: true,
+        //     data: {disp_type: 'general_instruction'}
+        // }         
+        
+        // * Trial composition * //
+        var scale = [
+            "0 - Not similar", 
+            "1", 
+            "2", 
+            "3", 
+            "4",
+            "5 - Identical"
+        ];        
+        var pair_judge ={
+            type: 'html-likert',
+            questions: [{
+                name: 'pair1',
+                stimulus_L: jsPsych.timelineVariable('stim_path_left'),
+                stimulus_R: jsPsych.timelineVariable('stim_path_right'),                
+                labels: scale,                
+                required: true
+            }],
+            randomize_question_order: true,
+            scale_width: 500,
+            data: {
+                disp_type: 'test_display',
+                wheel_num: wheel_number,
+                radius: jsPsych.timelineVariable('radius'),                          
+            }         
+
+        }
+        var judgment_procedure = {
+            timeline: [pair_judge],
+            timeline_variables: e_cond,
+            randomize_order: false
+        }
+
+        // * break time * //
+        // var test_break = {
+        //     type: 'html-button-response',
+        //     stimulus: '<p style="color: black; font-size: 20px;">Take a break, and press the button to start again.</p>',
+        //     choices: ['Start'],                  
+        //     data: {disp_type: 'test-break'}
+        // }
+
+        // * demographic page  * //
+        // var demographic_page = {
+        //     type: 'html-button-response',
+        //     stimulus: html='<p style="color: black; font-size: 20px;">'
+        //         +'You are done! But do not close this page until instructed.</br></br>'
+        //         +'Now we would like to collect your demographic information.</br>'
+        //         +'Click the <b>Demographic questions</b> below to complete the questionnaires.</br>'
+        //         +'After completing the questionnaires, please <b>come back</b> to this page and press <b>Done</b> at the bottom.</br></br>'
+        //         +'<a href="https://redcap.utoronto.ca/surveys/index.php?s=DDT8ME9KFL&study_name=scene_wheel_difficulty_check" target="_blank">'
+        //         +'Demographic questions </a></br></br></p>',
+        //     choices: ['Done'], 
+        //     data: {disp_type: 'demographic-link'}        
+        // }
+        
+        // * Debriefing form * //       
+        // var debrief_page = {
+        //     type: 'external-html',
+        //     url: "materials/debriefing_letter.html",
+        //     cont_btn: "finish",            
+        //     data: {disp_type: 'debriefing_page'}
+        // }
+        
+        // // * Experiment End * //
+        // var exp_over = {
+        //     type: 'html-keyboard-response',
+        //     stimulus: '<p style="color: black; font-size: 20px;">You can close this page. Thank you!</p>',
+        //     choices: jsPsych.NO_KEYS,
+        //     trial_duration: 2000,
+        //     data: {disp_type: 'exp-done'}
+        // }
+        
+
+        // * timeline fill up * //  
+        timeline = [];      
+        timeline.push(judgment_procedure);
+        
+        // * for non-webp browsers * //
+        // var webp = Modernizr.webp;       
+        // if(!webp){
+        //     var webp_warning = {
+        //         type: 'html-keyboard-response',
+        //         stimulus: '<p style="color: black; font-size: 20px;">'
+        //             +'Your browser does not support the webp image format,<br> '
+        //             +'which means that you will not be able to complete the experiment.<br>'
+        //             +'Browsers that support the webp include '
+        //             +'Chrome, Firefox, IE, Edge, etc (not Safari).',
+        //         choices: jsPsych.NO_KEYS,
+        //         trial_duration: 10000,
+        //         data: {disp_type: 'webp_warning'}
+        //     }
+        //     var timeline = [webp_warning];
+        //     var preload_images = [handle_bar]; // radomly load            
+        // }
+       
+        jsPsych.init({
+            // exclusions: { webp: true },    
+            timeline: timeline,           
+            preload_images: stimuli,                        
+            on_finish: function() {
+                jsPsych.data.displayData(); 
+
+                // // get data values
+                // var data = {experiment:"sceneWheel_main",
+                //             repo:"sceneWheel_main",
+                //             data:jsPsych.data.get().values(),
+                //             browser_info:browser_info,
+                //             interaction_data:jsPsych.data.getInteractionData().values(),
+                //             exp_condition:condition}
+
+                // // send data to savejs
+                // var xhr = new XMLHttpRequest();
+                // xhr.open('POST','https://macklab-savejs.netlify.app/api/savejs');
+                // xhr.setRequestHeader('Content-Type','application/json');
+                // xhr.onload = function(){
+                //   if(xhr.status==200){
+                //     var response=JSON.parse(xhr.responseText);
+                //     console.log(response.success);
+                //   }
+                // };
+                // xhr.send(JSON.stringify(data));   
+
+                // // send data to firebase                      
+                // var tmp = new Uint32Array(1);
+                // tmp = window.crypto.getRandomValues(tmp)
+                // var dbpath = firebase.auth().currentUser.uid+'/'+tmp;
+                // firebase.database().ref(dbpath).set({
+                //     data: [
+                //         browser_info,
+                //         condition,
+                //         jsPsych.data.get().values(), 
+                //         jsPsych.data.getInteractionData().values()
+                //         ],
+                //     study: 'sceneWheel',
+                //     date: Date()
+                // });
+            }
+        });      
+       
+    
+
+   </script>
+
+</html>
+    
+
+    
+
+       
+
