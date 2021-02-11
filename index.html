@@ -2,29 +2,8 @@
 <html lang = 'en'>
     <head>
         <title>Experiment - Scene similarity</title>
-        <style>
-                                   
-            #left_arena { 
-                position: absolute;                        
-                left: 0;             
-                width: 50%;
-                height: 50%;  
-                display: flex;
-                align-items: center;
-                justify-content: center;   
-                border: 1px solid grey;              
-            }
-            #right_arena {   
-                position: absolute;                 
-                right: 0;                  
-                width: 50%;
-                height: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border: 1px solid grey;     
-            }
-        
+        <style>                                   
+                   
         </style>
         <script src='jspsych-6.2.0/jspsych.js'></script>
         <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>        
@@ -32,29 +11,26 @@
         <script src="js_library/modernizr-custom.js"></script>  
         <script src="js_library/underscore-min.js"></script> 
         <script src="js_library/factorial_noRandom.js"></script>      
-        <!-- <script src="jspsych-6.1.0/plugins/jspsych-fullscreen.js"></script>
-        <script src="jspsych-6.1.0/plugins/jspsych-instructions.js"></script> -->
-        <!-- <script src='jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js'></script>
-        <script src='jspsych-6.1.0/plugins/jspsych-html-button-response.js'></script> -->
+        <script src="jspsych-6.1.0/plugins/jspsych-fullscreen.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-instructions.js"></script>      
         <script src='jspsych-6.2.0/plugins/jspsych-html-likert.js'></script> 
-        <!-- <script src="jspsych-6.1.0/plugins/jspsych-external-html.js"></script>               -->                              
+        <script src="jspsych-6.1.0/plugins/jspsych-external-html.js"></script>
         <link href='jspsych-6.2.0/css/jspsych.css' rel='stylesheet' type="text/css">
-        <script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-app.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-auth.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-database.js"></script>       
+        <script src="https://www.gstatic.com/firebasejs/8.2.6/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.2.6/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.2.6/firebase-database.js"></script>       
     </head>
     <body></body>
 
     <script type="text/javascript">
         // Firebase set up
         var firebaseConfig = {
-            apiKey: "AIzaSyBdaTj6S3xND2qG0_HUN1rrF0GWUh5EP1c",
-            authDomain: "scenewheel-main.firebaseapp.com",
-            databaseURL: "https://scenewheel-main.firebaseio.com",
-            projectId: "scenewheel-main",
-            storageBucket: "scenewheel-main.appspot.com",
-            messagingSenderId: "611149998558",
-            appId: "1:611149998558:web:3650c2da774e6c7433d54f"
+            apiKey: "AIzaSyCxnLHFZhU0kq8UjHi2FeRi2QNizJ0Vwh4",
+            authDomain: "scenewheel-similarityjudgment.firebaseapp.com",
+            projectId: "scenewheel-similarityjudgment",
+            storageBucket: "scenewheel-similarityjudgment.appspot.com",
+            messagingSenderId: "1066474091008",
+            appId: "1:1066474091008:web:c709575df30b1e989b9ee5"
         };
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -180,8 +156,8 @@
             type: 'html-likert',
             questions: [{
                 name: 'pair1',
-                stimulus_L: jsPsych.timelineVariable('stim_path_left'),
-                stimulus_R: jsPsych.timelineVariable('stim_path_right'),                
+                stimulus_L: 'stimuli/Wheel01/wheel01_r02/000000.webp', //jsPsych.timelineVariable('stim_path_left'),
+                stimulus_R: 'stimuli/Wheel01/wheel01_r02/000000.webp', //jsPsych.timelineVariable('stim_path_right'),                
                 labels: scale,                
                 required: true
             }],
@@ -196,7 +172,7 @@
         }
         var judgment_procedure = {
             timeline: [pair_judge],
-            timeline_variables: e_cond,
+            // timeline_variables: e_cond,
             randomize_order: false
         }
 
@@ -245,22 +221,22 @@
         timeline.push(judgment_procedure);
         
         // * for non-webp browsers * //
-        // var webp = Modernizr.webp;       
-        // if(!webp){
-        //     var webp_warning = {
-        //         type: 'html-keyboard-response',
-        //         stimulus: '<p style="color: black; font-size: 20px;">'
-        //             +'Your browser does not support the webp image format,<br> '
-        //             +'which means that you will not be able to complete the experiment.<br>'
-        //             +'Browsers that support the webp include '
-        //             +'Chrome, Firefox, IE, Edge, etc (not Safari).',
-        //         choices: jsPsych.NO_KEYS,
-        //         trial_duration: 10000,
-        //         data: {disp_type: 'webp_warning'}
-        //     }
-        //     var timeline = [webp_warning];
-        //     var preload_images = [handle_bar]; // radomly load            
-        // }
+        var webp = Modernizr.webp;       
+        if(!webp){
+            var webp_warning = {
+                type: 'html-keyboard-response',
+                stimulus: '<p style="color: black; font-size: 20px;">'
+                    +'Your browser does not support the webp image format,<br> '
+                    +'which means that you will not be able to complete the experiment.<br>'
+                    +'Browsers that support the webp include '
+                    +'Chrome, Firefox, IE, Edge, etc (not Safari).',
+                choices: jsPsych.NO_KEYS,
+                trial_duration: 10000,
+                data: {disp_type: 'webp_warning'}
+            }
+            var timeline = [webp_warning];
+            var preload_images = ['stimuli/Wheel01/wheel01_r02/000000.webp']; // randomly load            
+        }
        
         jsPsych.init({
             // exclusions: { webp: true },    
@@ -269,40 +245,40 @@
             on_finish: function() {
                 jsPsych.data.displayData(); 
 
-                // // get data values
-                // var data = {experiment:"sceneWheel_main",
-                //             repo:"sceneWheel_main",
-                //             data:jsPsych.data.get().values(),
-                //             browser_info:browser_info,
-                //             interaction_data:jsPsych.data.getInteractionData().values(),
-                //             exp_condition:condition}
+                // get data values
+                var data = {experiment:"sceneWheel_similarityJudgment",
+                            repo:"sceneWheel_similarityJudgment",
+                            data:jsPsych.data.get().values(),
+                            browser_info:browser_info,
+                            interaction_data:jsPsych.data.getInteractionData().values(),
+                            exp_condition:condition}
 
-                // // send data to savejs
-                // var xhr = new XMLHttpRequest();
-                // xhr.open('POST','https://macklab-savejs.netlify.app/api/savejs');
-                // xhr.setRequestHeader('Content-Type','application/json');
-                // xhr.onload = function(){
-                //   if(xhr.status==200){
-                //     var response=JSON.parse(xhr.responseText);
-                //     console.log(response.success);
-                //   }
-                // };
-                // xhr.send(JSON.stringify(data));   
+                // send data to savejs
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST','https://macklab-savejs.netlify.app/api/savejs');
+                xhr.setRequestHeader('Content-Type','application/json');
+                xhr.onload = function(){
+                  if(xhr.status==200){
+                    var response=JSON.parse(xhr.responseText);
+                    console.log(response.success);
+                  }
+                };
+                xhr.send(JSON.stringify(data));   
 
-                // // send data to firebase                      
-                // var tmp = new Uint32Array(1);
-                // tmp = window.crypto.getRandomValues(tmp)
-                // var dbpath = firebase.auth().currentUser.uid+'/'+tmp;
-                // firebase.database().ref(dbpath).set({
-                //     data: [
-                //         browser_info,
-                //         condition,
-                //         jsPsych.data.get().values(), 
-                //         jsPsych.data.getInteractionData().values()
-                //         ],
-                //     study: 'sceneWheel',
-                //     date: Date()
-                // });
+                // send data to firebase                      
+                var tmp = new Uint32Array(1);
+                tmp = window.crypto.getRandomValues(tmp)
+                var dbpath = firebase.auth().currentUser.uid+'/'+tmp;
+                firebase.database().ref(dbpath).set({
+                    data: [
+                        browser_info,
+                        // condition,
+                        jsPsych.data.get().values(), 
+                        jsPsych.data.getInteractionData().values()
+                        ],
+                    study: 'sceneWheel_similarityJudgment',
+                    date: Date()
+                });
             }
         });      
        
