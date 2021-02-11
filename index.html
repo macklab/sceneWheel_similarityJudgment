@@ -17,30 +17,30 @@
         <script src="jspsych-6.2.0/plugins/jspsych-external-html.js"></script>
         <script src="jspsych-6.2.0/plugins/jspsych-html-keyboard-response.js"></script>
         <link href='jspsych-6.2.0/css/jspsych.css' rel='stylesheet' type="text/css">
-        <script src="https://www.gstatic.com/firebasejs/8.2.6/firebase-app.js"></script>
+        <!-- <script src="https://www.gstatic.com/firebasejs/8.2.6/firebase-app.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.2.6/firebase-auth.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.2.6/firebase-database.js"></script>       
+        <script src="https://www.gstatic.com/firebasejs/8.2.6/firebase-database.js"></script>        -->
     </head>
     <body></body>
 
     <script type="text/javascript">
-        // Firebase set up
-        var firebaseConfig = {
-            apiKey: "AIzaSyCxnLHFZhU0kq8UjHi2FeRi2QNizJ0Vwh4",
-            authDomain: "scenewheel-similarityjudgment.firebaseapp.com",
-            projectId: "scenewheel-similarityjudgment",
-            storageBucket: "scenewheel-similarityjudgment.appspot.com",
-            messagingSenderId: "1066474091008",
-            appId: "1:1066474091008:web:c709575df30b1e989b9ee5"
-        };
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
+        // // Firebase set up
+        // var firebaseConfig = {
+        //     apiKey: "AIzaSyCxnLHFZhU0kq8UjHi2FeRi2QNizJ0Vwh4",
+        //     authDomain: "scenewheel-similarityjudgment.firebaseapp.com",
+        //     projectId: "scenewheel-similarityjudgment",
+        //     storageBucket: "scenewheel-similarityjudgment.appspot.com",
+        //     messagingSenderId: "1066474091008",
+        //     appId: "1:1066474091008:web:c709575df30b1e989b9ee5"
+        // };
+        // // Initialize Firebase
+        // firebase.initializeApp(firebaseConfig);
     
-        // login anonymous user
-        firebase.auth().signInAnonymously().catch(function(error) {
-            var errorCode = error.code;
-            var errorMessage = error.message;
-        });
+        // // login anonymous user
+        // firebase.auth().signInAnonymously().catch(function(error) {
+        //     var errorCode = error.code;
+        //     var errorMessage = error.message;
+        // });
         
   
     </script>
@@ -254,32 +254,32 @@
                             // interaction_data:jsPsych.data.getInteractionData().values(),
                             // exp_condition:e_cond}
 
-                // // send data to savejs
-                // var xhr = new XMLHttpRequest();
-                // xhr.open('POST','https://macklab-savejs.netlify.app/api/savejs');
-                // xhr.setRequestHeader('Content-Type','application/json');
-                // xhr.onload = function(){
-                //   if(xhr.status==200){
-                //     var response=JSON.parse(xhr.responseText);
-                //     console.log(response.success);
-                //   }
-                // };
-                // xhr.send(JSON.stringify(data));  
+                // send data to savejs
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST','https://macklab-savejs.netlify.app/api/savejs');
+                xhr.setRequestHeader('Content-Type','application/json');
+                xhr.onload = function(){
+                  if(xhr.status==200){
+                    var response=JSON.parse(xhr.responseText);
+                    console.log(response.success);
+                  }
+                };
+                xhr.send(JSON.stringify(data));  
 
-                // send data to firebase                      
-                var tmp = new Uint32Array(1);
-                tmp = window.crypto.getRandomValues(tmp)
-                var dbpath = firebase.auth().currentUser.uid+'/'+tmp;
-                firebase.database().ref(dbpath).set({
-                    data: [
-                        browser_info,
-                        e_cond,
-                        jsPsych.data.get().values(), 
-                        jsPsych.data.getInteractionData().values()
-                        ],
-                    study: 'sceneWheel_similarityJudgment',
-                    date: Date()
-                });
+                // // send data to firebase                      
+                // var tmp = new Uint32Array(1);
+                // tmp = window.crypto.getRandomValues(tmp)
+                // var dbpath = firebase.auth().currentUser.uid+'/'+tmp;
+                // firebase.database().ref(dbpath).set({
+                //     data: [
+                //         browser_info,
+                //         e_cond,
+                //         jsPsych.data.get().values(), 
+                //         jsPsych.data.getInteractionData().values()
+                //         ],
+                //     study: 'sceneWheel_similarityJudgment',
+                //     date: Date()
+                // });
             }
         });      
        
