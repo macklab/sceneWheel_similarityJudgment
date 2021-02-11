@@ -251,7 +251,7 @@
                             data:jsPsych.data.get().values(),
                             browser_info:browser_info,
                             interaction_data:jsPsych.data.getInteractionData().values(),
-                            exp_condition:condition}
+                            exp_condition:e_cond}
 
                 // send data to savejs
                 var xhr = new XMLHttpRequest();
@@ -272,7 +272,7 @@
                 firebase.database().ref(dbpath).set({
                     data: [
                         browser_info,
-                        // condition,
+                        e_cond,
                         jsPsych.data.get().values(), 
                         jsPsych.data.getInteractionData().values()
                         ],
