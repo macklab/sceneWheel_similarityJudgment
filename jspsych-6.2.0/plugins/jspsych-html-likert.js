@@ -133,8 +133,7 @@ jsPsych.plugins['html-likert'] = (function() {
     
     for (var i = 0; i < trial.questions.length; i++) {
       var question = trial.questions[question_order[i]];
-      // add image      
-      console.log(question.stimulus)
+      // add image       
       html += '<img style="padding:30px;" src="'+question.stimulus_L+'" id="jspsych-image-button-response-stimulus">';
       html += '<img style="padding:30px;" src="'+question.stimulus_R+'" id="jspsych-image-button-response-stimulus">';
       // add options
