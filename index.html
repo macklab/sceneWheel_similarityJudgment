@@ -69,7 +69,8 @@
             }
         };
         var factors = {
-            radius: ['02', '04', '08', '16', '32'],            
+            // radius: ['02', '04', '08', '16', '32'],  
+            radius: ['16'],          
             stim_list: pair
         };
         var e_cond = factorial_noRandom(factors);
@@ -146,19 +147,19 @@
         
         // * Trial composition * //
         var scale = [
-            "0 - Not similar", 
-            "1", 
-            "2", 
-            "3", 
-            "4",
-            "5 - Identical"
+            "<b>0</b><br>Not similar", 
+            "<b>1</b>", 
+            "<b>2</b>", 
+            "<b>3</b>", 
+            "<b>4</b>",
+            "<b>5</b><br>Identical"
         ];        
         var pair_judge ={
             type: 'html-likert',
             questions: [{
                 name: 'pair1',
-                stimulus_L: 'stimuli/Wheel01/wheel01_r02/000000.webp', //jsPsych.timelineVariable('stim_path_left'),
-                stimulus_R: 'stimuli/Wheel01/wheel01_r02/000000.webp', //jsPsych.timelineVariable('stim_path_right'),                
+                stimulus_L: jsPsych.timelineVariable('stim_path_left'),
+                stimulus_R: jsPsych.timelineVariable('stim_path_right'),                
                 labels: scale,                
                 required: true
             }],
@@ -173,7 +174,7 @@
         }
         var judgment_procedure = {
             timeline: [pair_judge],
-            // timeline_variables: e_cond,
+            timeline_variables: e_cond,
             randomize_order: false
         }
 
@@ -249,10 +250,10 @@
                 // get data values
                 var data = {experiment:"sceneWheel_similarityJudgment",
                             repo:"sceneWheel_similarityJudgment",
-                            data:jsPsych.data.get().values()}
-                            // browser_info:browser_info,
-                            // interaction_data:jsPsych.data.getInteractionData().values(),
-                            // exp_condition:e_cond}
+                            data:jsPsych.data.get().values(),
+                            browser_info:browser_info,
+                            interaction_data:jsPsych.data.getInteractionData().values(),
+                            exp_condition:e_cond}
 
                 // send data to savejs
                 var xhr = new XMLHttpRequest();
