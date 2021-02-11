@@ -157,7 +157,7 @@
         var pair_judge ={
             type: 'html-likert',
             questions: [{
-                name: 'pair1',
+                name: 'thisPair',
                 stimulus_L: jsPsych.timelineVariable('stim_path_left'),
                 stimulus_R: jsPsych.timelineVariable('stim_path_right'),                
                 labels: scale,                
@@ -166,11 +166,11 @@
             randomize_question_order: true,
             scale_width: 500,
             data: {
-                disp_type: 'test_display',
+                disp_type: 'likert_display',
                 wheel_num: wheel_number,
-                radius: jsPsych.timelineVariable('radius'),                          
-            }         
-
+                radius: jsPsych.timelineVariable('radius'),
+                pair: jsPsych.timelineVariable('stim_list'),                                   
+            }
         }
         var judgment_procedure = {
             timeline: [pair_judge],
