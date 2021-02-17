@@ -15,7 +15,7 @@
         <script src="jspsych-6.2.0/plugins/jspsych-instructions.js"></script>      
         <script src='jspsych-6.2.0/plugins/jspsych-html-likert.js'></script> 
         <script src="jspsych-6.2.0/plugins/jspsych-external-html.js"></script>
-        <script src="jspsych-6.2.0/plugins/jspsych-html-keyboard-response.js"></script>
+        <script src="jspsych-6.2.0/plugins/jspsych-html-button-response.js"></script>
         <link href='jspsych-6.2.0/css/jspsych.css' rel='stylesheet' type="text/css">
         <!-- <script src="https://www.gstatic.com/firebasejs/8.2.6/firebase-app.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.2.6/firebase-auth.js"></script>
@@ -54,11 +54,32 @@
         // * image host * //
         const img_host = '';//'https://macklab.dev/resources/sceneWheel/';
 
-        // * wheel info * //        
-        var wheel_number = '01';
+        // * wheel info * //
+        var wheel_pool = ['01','02','03','04','05'];
+        var main_wheel = '01';
+        var prac_wheel = _.sample(wheel_pool.filter(item => item !== main_wheel), 1);
 
-        // * condition set up * //  
-        var pair = [];
+        // * condition set up * //        
+        // -- practice condition -- //
+        var p_factor = {
+            radius: ['02', '04', '08', '16', '32'],
+            stim_list: [[0,30], [0,180]]
+        }
+        var p_cond = factorial_noRandom(p_factor);
+        var left_item = _.shuffle(Array(p_cond.length/2).fill(0).concat(Array(p_cond.length/2).fill(1)));
+        for (var i=0; i<p_cond.length; i++){
+            p_cond[i].left_item_idx = left_item[i];
+            p_cond[i].stim_path_left = [
+                'stimuli/'+'Wheel'+prac_wheel+'/wheel'+prac_wheel+'_r'+p_cond[i].radius+'/'+
+                ("00000"+p_cond[i].stim_list[left_item[i]]).slice(-6)+'.webp'
+            ];
+            p_cond[i].stim_path_right = [
+                'stimuli/'+'Wheel'+prac_wheel+'/wheel'+prac_wheel+'_r'+p_cond[i].radius+'/'+
+                ("00000"+p_cond[i].stim_list[(left_item[i]+1)%2]).slice(-6)+'.webp'
+            ];
+        };
+        // -- main condition -- //
+        var pair = []; // prepare all possible pairs
         var img_num = _.range(0,360,30);
         var identical_pair = _.sample(img_num,2); // catch trials
         pair.push([identical_pair[0],identical_pair[0]]);
@@ -68,40 +89,45 @@
                 pair.push([img_num[i], img_num[j]]);
             }
         };
-        var factors = {
+        var e_factors = {
             radius: ['02', '04', '08', '16', '32'],                 
             stim_list: pair
         };
-        var e_cond = factorial_noRandom(factors);
+        var e_cond = factorial_noRandom(e_factors);        
         // select one to be preseted left
         var left_item = _.shuffle(Array(e_cond.length/2).fill(0).concat(Array(e_cond.length/2).fill(1)));
         // specify path
         for (var i=0; i<e_cond.length; i++){
             e_cond[i].left_item_idx = left_item[i];
             e_cond[i].stim_path_left = [
-                'stimuli/'+'Wheel'+wheel_number+'/wheel'+wheel_number+'_r'+e_cond[i].radius+'/'+
+                'stimuli/'+'Wheel'+main_wheel+'/wheel'+main_wheel+'_r'+e_cond[i].radius+'/'+
                 ("00000"+e_cond[i].stim_list[left_item[i]]).slice(-6)+'.webp'
             ];
             e_cond[i].stim_path_right = [
-                'stimuli/'+'Wheel'+wheel_number+'/wheel'+wheel_number+'_r'+e_cond[i].radius+'/'+
+                'stimuli/'+'Wheel'+main_wheel+'/wheel'+main_wheel+'_r'+e_cond[i].radius+'/'+
                 ("00000"+e_cond[i].stim_list[(left_item[i]+1)%2]).slice(-6)+'.webp'
             ];
         };
-
+        // divide into 5 blocks
+        var n_block = 5;
+        var e_cond = _.chunk(_.shuffle(e_cond), e_cond.length/n_block);
+        
         // * preload images *//        
         var stimuli = [];
-        for (i=0; i <e_cond.length; i++){
+        for (i=0; i <p_cond.length; i++){
             stimuli.push(
-                img_host+e_cond[i].stim_path_left,
-                img_host+e_cond[i].stim_path_right,
+                img_host+p_cond[i].stim_path_left,
+                img_host+p_cond[i].stim_path_right,
                 );
         }
-        // var inst_img = [];
-        // for (i=0; i<5; i++){
-        //     inst_img.push(img_host+'instruction_difficulty/Slide'+(i+1)+'.jpeg');
-        // }
-        // var preload_images = [memory_item, handle_bar, handle_nobar, inst_img];
-
+        for (b=0; b<n_block; b++){
+            for (i=0; i <e_cond[b].length; i++){
+                stimuli.push(
+                    img_host+e_cond[b][i].stim_path_left,
+                    img_host+e_cond[b][i].stim_path_right,
+                );
+            };
+        };
         
         // ************** Display set up *************** //
         // * Consent * //
@@ -129,29 +155,42 @@
         //     data: {disp_type: 'online_consent_form'}
         // }        
 
-        // // * Instruction * //        
-        // var general_instruction = {
-        //     type: 'instructions',
-        //     pages: [
-        //         '<img src="'+inst_img[0]+'" style="width:90%">',
-        //         '<img src="'+inst_img[1]+'" style="width:90%">',
-        //         '<img src="'+inst_img[2]+'" style="width:90%">',
-        //         '<img src="'+inst_img[3]+'" style="width:90%">',
-        //         '<img src="'+inst_img[4]+'" style="width:90%">'
-        //     ],
-        //     show_clickable_nav: true,
-        //     show_page_number: true,
-        //     data: {disp_type: 'general_instruction'}
-        // }         
-        
+        // * Instruction * //  
+        var instruction1 = {
+            type: 'html-button-response',
+            stimulus: '<p style="color: black; font-size: 20px;">'+
+                '<b>Welcome to the experiment!</b><br><br>'+
+                'In this experiment, you will be asked to judge the similarity of scene image pairs.<br>'+
+                'Carefully look at the images and rate how similar they look to each other.<br>'+
+                'Click the Next button to start partice tials. There will be 10 practice trials.</p>',               
+            choices: ['Start Practice'],                  
+            data: {disp_type: 'instrcution-practice'}
+        };       
+        var instruction2 = {
+            type: 'html-button-response',
+            stimulus: '<p style="color: black; font-size: 20px;">'+
+                "Practice trials are done. Now let's move onto the main session.<br><br>"+
+                'In the main session, you will perform the same task.<br>'+
+                'There will be 340 trials, and 4 break time will be given.</p>',
+            choices: ['Start Main'],                  
+            data: {disp_type: 'instruction-parctice'}
+        };
+        var test_break = {
+            type: 'html-button-response',
+            stimulus: '<p style="color: black; font-size: 20px;">'+
+                'Take a break, and press the button to start again.</p>',
+            choices: ['Start'],                  
+            data: {disp_type: 'instruction-break'}
+        };
+
         // * Trial composition * //
         var scale = [
-            "<b>0</b><br>Not similar", 
+            "<b>0</b><br>Low similarity", 
             "<b>1</b>", 
             "<b>2</b>", 
             "<b>3</b>", 
             "<b>4</b>",
-            "<b>5</b><br>Identical"
+            "<b>5</b><br>High similarity"
         ];        
         var pair_judge ={
             type: 'html-likert',
@@ -165,25 +204,41 @@
             randomize_question_order: true,
             scale_width: 500,
             data: {
-                disp_type: 'likert_display',
-                wheel_num: wheel_number,
+                disp_type: 'likert_display',                
                 radius: jsPsych.timelineVariable('radius'),
                 pair: jsPsych.timelineVariable('stim_list'),                                   
             }
         }
-        var judgment_procedure = {
+        var judgment_prac = {
             timeline: [pair_judge],
-            timeline_variables: e_cond,
+            timeline_variables: p_cond,
             randomize_order: true
         }
-
-        // * break time * //
-        // var test_break = {
-        //     type: 'html-button-response',
-        //     stimulus: '<p style="color: black; font-size: 20px;">Take a break, and press the button to start again.</p>',
-        //     choices: ['Start'],                  
-        //     data: {disp_type: 'test-break'}
-        // }
+        var judgment_main0 = {
+            timeline: [pair_judge],
+            timeline_variables: e_cond[0],
+            randomize_order: true
+        }
+        var judgment_main1 = {
+            timeline: [pair_judge],
+            timeline_variables: e_cond[1],
+            randomize_order: true
+        }
+        var judgment_main2 = {
+            timeline: [pair_judge],
+            timeline_variables: e_cond[2],
+            randomize_order: true
+        }
+        var judgment_main3 = {
+            timeline: [pair_judge],
+            timeline_variables: e_cond[3],
+            randomize_order: true
+        }
+        var judgment_main4 = {
+            timeline: [pair_judge],
+            timeline_variables: e_cond[4],
+            randomize_order: true
+        }
 
         // * demographic page  * //
         // var demographic_page = {
@@ -207,19 +262,18 @@
         //     data: {disp_type: 'debriefing_page'}
         // }
         
-        // // * Experiment End * //
-        // var exp_over = {
-        //     type: 'html-keyboard-response',
-        //     stimulus: '<p style="color: black; font-size: 20px;">You can close this page. Thank you!</p>',
-        //     choices: jsPsych.NO_KEYS,
-        //     trial_duration: 2000,
-        //     data: {disp_type: 'exp-done'}
-        // }
-        
+              
 
         // * timeline fill up * //  
-        timeline = [];      
-        timeline.push(judgment_procedure);
+        timeline = [];
+        timeline.push(instruction1);
+        timeline.push(judgment_prac);
+        timeline.push(instruction2);
+        for (b=0; b<n_block-1; b++) {          
+            timeline.push(eval('judgment_main'+(b)));
+            timeline.push(test_break);
+        }
+        timeline.push(eval('judgment_main'+(n_block-1)));
         
         // * for non-webp browsers * //
         var webp = Modernizr.webp;       
@@ -240,15 +294,17 @@
         }
        
         jsPsych.init({
-            // exclusions: { webp: true },    
+            // exclusions: { webp: true },             
             timeline: timeline,           
-            preload_images: stimuli,                        
+            preload_images: stimuli,  
+            show_progress_bar: true,                      
             on_finish: function() {
                 jsPsych.data.displayData(); 
 
                 // get data values
                 var data = {experiment:"sceneWheel_similarityJudgment",
                             repo:"sceneWheel_similarityJudgment",
+                            wheel_info:[main_wheel, prac_wheel],
                             data:jsPsych.data.get().values(),
                             browser_info:browser_info,
                             interaction_data:jsPsych.data.getInteractionData().values(),
