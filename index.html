@@ -263,70 +263,13 @@
             randomize_order: true
         }
 
-        // * demographic page  * //
-        var demographic_page = {
-            type: 'html-button-response',
-            stimulus: html='<p style="color: black; font-size: 20px;">'
-                +'You are done! But do not close this page until instructed.</br></br>'
-                +'Now we would like to collect your demographic information.</br>'
-                +'Click the <b>Demographic questions</b> below to complete the questionnaires.</br>'
-                +'After completing the questionnaires, please <b>come back</b> to this page and press <b>Done</b> at the bottom.</br></br>'
-                +'<a href="https://redcap.utoronto.ca/surveys/index.php?s=DDT8ME9KFL&study_name=scene_wheel_similarityJudgment" target="_blank">'
-                +'Demographic questions </a></br></br></p>',
-            choices: ['Done'], 
-            data: {disp_type: 'demographic-link'}        
-        }
-        
-        // * Debriefing form * //       
-        // var debrief_page = {
-        //     type: 'external-html',
-        //     url: "materials/debriefing_letter.html",
-        //     cont_btn: "finish",            
-        //     data: {disp_type: 'debriefing_page'}
-        // }
-        
-              
-
-        // * timeline fill up * //  
-        timeline = [];
-        // timeline.push(consent_inst);
-        // timeline.push(consent_page);
-        timeline.push(instruction1);
-        timeline.push(judgment_prac);
-        // timeline.push(instruction2);
-        // for (b=0; b<n_block-1; b++) {          
-        //     timeline.push(eval('judgment_main'+(b)));
-        //     timeline.push(test_break);
-        // }
-        // timeline.push(eval('judgment_main'+(n_block-1)));
-        // timeline.push(demographic_page);
-        
-        // * for non-webp browsers * //
-        var webp = Modernizr.webp;       
-        if(!webp){
-            var webp_warning = {
-                type: 'html-keyboard-response',
-                stimulus: '<p style="color: black; font-size: 20px;">'
-                    +'Your browser does not support the webp image format,<br> '
-                    +'which means that you will not be able to complete the experiment.<br>'
-                    +'Browsers that support the webp include '
-                    +'Chrome, Firefox, IE, Edge, etc (not Safari).',
-                choices: jsPsych.NO_KEYS,
-                trial_duration: 10000,
-                data: {disp_type: 'webp_warning'}
-            }
-            var timeline = [webp_warning];
-            var preload_images = ['stimuli/Wheel01/wheel01_r02/000000.webp']; // randomly load            
-        }
-       
-        jsPsych.init({
-            // exclusions: { webp: true },             
-            timeline: timeline,           
-            preload_images: stimuli,  
-            show_progress_bar: true, 
-            auto_update_progress_bar: false,                     
-            on_finish: function() {
-                
+        // * save data * //
+        var save_data = {
+            type: 'html-keyboard-response',
+            stimulus: '<p>We are saving your data, please stay on this page.</p>',
+            choices: jsPsych.NO_KEYS,
+            trial_duration: 3000,
+            on_finish: function(){              
                 // get data values
                 var data = {experiment:"sceneWheel_similarityJudgment",
                             repo:"sceneWheel_similarityJudgment",
@@ -362,7 +305,71 @@
                     study: 'sceneWheel_similarityJudgment',
                     date: Date()
                 });
+            }           
+        }
+
+        // * demographic page  * //
+        var demographic_page = {
+            type: 'html-button-response',
+            stimulus: html='<p style="color: black; font-size: 20px;">'
+                +'You are done! Now we would like to collect your demographic information.</br>'
+                +'Click the <b>Demographic questions</b> below to complete the questionnaires.</br>'
+                +'After completing the questionnaires, please <b>come back</b> to this page and press <b>Done</b> at the bottom.</br></br>'
+                +'<a href="https://redcap.utoronto.ca/surveys/index.php?s=DDT8ME9KFL&study_name=scene_wheel_similarityJudgment" target="_blank">'
+                +'Demographic questions </a></br></br></p>',
+            choices: ['Done'], 
+            data: {disp_type: 'demographic-link'}        
+        }
+        
+        // * Debriefing form * //       
+        // var debrief_page = {
+        //     type: 'external-html',
+        //     url: "materials/debriefing_letter.html",
+        //     cont_btn: "finish",            
+        //     data: {disp_type: 'debriefing_page'}
+        // }
+        
+              
+
+        // * timeline fill up * //  
+        timeline = [];
+        // timeline.push(consent_inst);
+        // timeline.push(consent_page);
+        timeline.push(instruction1);        
+        timeline.push(judgment_prac);
+        // timeline.push(instruction2);
+        // for (b=0; b<n_block-1; b++) {          
+        //     timeline.push(eval('judgment_main'+(b)));
+        //     timeline.push(test_break);
+        // }
+        // timeline.push(eval('judgment_main'+(n_block-1)));
+        timeline.push(save_data);
+        // timeline.push(demographic_page);
+        
+        // * for non-webp browsers * //
+        var webp = Modernizr.webp;       
+        if(!webp){
+            var webp_warning = {
+                type: 'html-keyboard-response',
+                stimulus: '<p style="color: black; font-size: 20px;">'
+                    +'Your browser does not support the webp image format,<br> '
+                    +'which means that you will not be able to complete the experiment.<br>'
+                    +'Browsers that support the webp include '
+                    +'Chrome, Firefox, IE, Edge, etc (not Safari).',
+                choices: jsPsych.NO_KEYS,
+                trial_duration: 10000,
+                data: {disp_type: 'webp_warning'}
             }
+            var timeline = [webp_warning];
+            var preload_images = ['stimuli/Wheel01/wheel01_r02/000000.webp']; // randomly load            
+        }
+       
+        jsPsych.init({
+            // exclusions: { webp: true },             
+            timeline: timeline,           
+            preload_images: stimuli,  
+            show_progress_bar: true, 
+            auto_update_progress_bar: false           
         });      
        
     
