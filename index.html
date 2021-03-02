@@ -11,8 +11,7 @@
         <script src="js_library/modernizr-custom.js"></script>  
         <script src="js_library/underscore-min.js"></script> 
         <script src="js_library/factorial_noRandom.js"></script>      
-        <script src="jspsych-6.2.0/plugins/jspsych-fullscreen.js"></script>
-        <script src="jspsych-6.2.0/plugins/jspsych-instructions.js"></script>      
+        <script src="jspsych-6.2.0/plugins/jspsych-fullscreen.js"></script>             
         <script src='jspsych-6.2.0/plugins/jspsych-html-likert.js'></script> 
         <script src="jspsych-6.2.0/plugins/jspsych-external-html.js"></script>
         <script src="jspsych-6.2.0/plugins/jspsych-html-button-response.js"></script>
@@ -41,9 +40,7 @@
         firebase.auth().signInAnonymously().catch(function(error) {
             var errorCode = error.code;
             var errorMessage = error.message;
-        });
-        
-  
+        }); 
     </script>
 
     <script>
@@ -55,20 +52,23 @@
         // * image host * //
         var img_host = 'https://macklab.dev/resources/sceneWheel/validation_5radii/';
 
-        // * wheel info * //
-        var wheel_pool = ['01','02','03','04','05'];
+        // * wheel info * //        
         var main_wheel = '01';
-        var prac_wheel = _.sample(wheel_pool.filter(item => item !== main_wheel), 1);
+        var prac_wheel = '00';
 
-        // * condition set up * //        
-        // -- practice condition -- //        
-        var p_factor = {
-            radius: ['32'],            
-            stim_list: [[0,  0], [0, 30], [0, 60], [0, 90], 
-                        [0,120], [0,150], [0,180], [0,210],
-                        [0,240], [0,270], [0,300], [0,330]]
-        }
-        var p_cond = factorial_noRandom(p_factor);        
+        // * condition set up * //       
+        var p_cond = [ // pairs covering the entire range of px-correlation
+            {radius:'02', stim_list:[0  ,0  ]},
+            {radius:'02', stim_list:[240,270]},
+            {radius:'04', stim_list:[90 ,120]},
+            {radius:'04', stim_list:[90 ,210]},
+            {radius:'08', stim_list:[60 ,120]},
+            {radius:'08', stim_list:[0  ,300]},
+            {radius:'16', stim_list:[240,270]},
+            {radius:'16', stim_list:[240,330]},
+            {radius:'32', stim_list:[0  ,180]},
+            {radius:'32', stim_list:[90 ,210]}
+        ];        
         var left_item = _.shuffle(Array(Math.floor(p_cond.length/2)).fill(0).concat(Array(Math.ceil(p_cond.length/2)).fill(1)));
         for (var i=0; i<p_cond.length; i++){            
             p_cond[i].left_item_idx = left_item[i];            
@@ -134,29 +134,29 @@
         
         // ************** Display set up *************** //
         // * Consent * //
-        // var consent_inst = {
-        //     type: 'html-button-response',
-        //     stimulus: html='<p style="color: black; font-size: 20px;">'
-        //         +'We would like to get your consent before starting the experiment.</p>',
-        //     choices: ['Consent page'], 
-        //     data: {disp_type: 'consent-instruction'}
-        // }
-        // var check_consent = function(elem) {
-        //     if (document.getElementById('radio_agree').checked) {                             
-        //         return true;
-        //     } else {
-        //         alert("If you wish to participate, you must check the box next to the statement 'I agree.'");
-        //         return false;
-        //     }
-        //     return false;
-        // };
-        // var consent_page = {
-        //     type: 'external-html',
-        //     url: "materials/online_consent.html",
-        //     cont_btn: "start",
-        //     check_fn: check_consent,
-        //     data: {disp_type: 'online_consent_form'}
-        // }        
+        var consent_inst = {
+            type: 'html-button-response',
+            stimulus: html='<p style="color: black; font-size: 20px;">'
+                +'We would like to get your consent before starting the experiment.</p>',
+            choices: ['Consent page'], 
+            data: {disp_type: 'consent-instruction'}
+        }
+        var check_consent = function(elem) {
+            if (document.getElementById('consent_checkbox').checked) {                             
+                return true;
+            } else {
+                alert("If you wish to participate, you must click the checkbox.'");
+                return false;
+            }
+            return false;
+        };
+        var consent_page = {
+            type: 'external-html',
+            url: "consent/consent_page.html",
+            cont_btn: "start",
+            check_fn: check_consent,
+            data: {disp_type: 'online_consent_form'}
+        }        
 
         // * Instruction * //  
         var instruction1 = {
@@ -164,17 +164,18 @@
             stimulus: '<p style="color: black; font-size: 20px;">'+
                 '<b>Welcome to the experiment!</b><br><br>'+
                 'In this experiment, you will be asked to judge the similarity of scene image pairs.<br>'+
-                'Carefully look at the images and rate how similar they look to each other.<br><br>'+
+                'Carefully look at the images and rate how similar they look to each other.<br>'+
                 'Click the Next button to start the practice block. There will be '+p_cond.length+' trials.</p>',               
             choices: ['Start Practice'],                  
             data: {disp_type: 'instrcution-practice'}
-        };       
+        };    
+        var n_trials = _.flatten(e_cond).length;   
         var instruction2 = {
             type: 'html-button-response',
             stimulus: '<p style="color: black; font-size: 20px;">'+
                 "Practice trials are done. Now let's move onto the main session.<br><br>"+
                 'In the main session, you will perform the same task.<br>'+
-                'There will be '+_.flatten(e_cond).length+' trials, and '+(n_block-1)+' breaks will be given.</p>',
+                'There will be '+n_trials+' trials, and '+(n_block-1)+' breaks will be given.</p>',
             choices: ['Start Main'],                  
             data: {disp_type: 'instruction-parctice'}
         };
@@ -210,6 +211,25 @@
                 disp_type: 'likert_display',                
                 radius: jsPsych.timelineVariable('radius'),
                 pair: jsPsych.timelineVariable('stim_list'),                                   
+            },
+            on_finish: function() {
+                // progress bar
+                var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
+                jsPsych.setProgressBar(curr_progress_bar_value + (1/n_trials));
+                // data saving
+                var curr_data = jsPsych.data.get()
+                // send data to savejs
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST','https://macklab-savejs.netlify.app/api/savejs');
+                xhr.setRequestHeader('Content-Type','application/json');
+                xhr.onload = function(){
+                  if(xhr.status==200){
+                    var response=JSON.parse(xhr.responseText);
+                    console.log(response.success);
+                  }
+                };
+                xhr.send(JSON.stringify(curr_data));
+
             }
         }
         var judgment_prac = {
@@ -244,18 +264,18 @@
         }
 
         // * demographic page  * //
-        // var demographic_page = {
-        //     type: 'html-button-response',
-        //     stimulus: html='<p style="color: black; font-size: 20px;">'
-        //         +'You are done! But do not close this page until instructed.</br></br>'
-        //         +'Now we would like to collect your demographic information.</br>'
-        //         +'Click the <b>Demographic questions</b> below to complete the questionnaires.</br>'
-        //         +'After completing the questionnaires, please <b>come back</b> to this page and press <b>Done</b> at the bottom.</br></br>'
-        //         +'<a href="https://redcap.utoronto.ca/surveys/index.php?s=DDT8ME9KFL&study_name=scene_wheel_difficulty_check" target="_blank">'
-        //         +'Demographic questions </a></br></br></p>',
-        //     choices: ['Done'], 
-        //     data: {disp_type: 'demographic-link'}        
-        // }
+        var demographic_page = {
+            type: 'html-button-response',
+            stimulus: html='<p style="color: black; font-size: 20px;">'
+                +'You are done! But do not close this page until instructed.</br></br>'
+                +'Now we would like to collect your demographic information.</br>'
+                +'Click the <b>Demographic questions</b> below to complete the questionnaires.</br>'
+                +'After completing the questionnaires, please <b>come back</b> to this page and press <b>Done</b> at the bottom.</br></br>'
+                +'<a href="https://redcap.utoronto.ca/surveys/index.php?s=DDT8ME9KFL&study_name=scene_wheel_similarityJudgment" target="_blank">'
+                +'Demographic questions </a></br></br></p>',
+            choices: ['Done'], 
+            data: {disp_type: 'demographic-link'}        
+        }
         
         // * Debriefing form * //       
         // var debrief_page = {
@@ -269,14 +289,17 @@
 
         // * timeline fill up * //  
         timeline = [];
+        // timeline.push(consent_inst);
+        // timeline.push(consent_page);
         timeline.push(instruction1);
         timeline.push(judgment_prac);
-        timeline.push(instruction2);
-        for (b=0; b<n_block-1; b++) {          
-            timeline.push(eval('judgment_main'+(b)));
-            timeline.push(test_break);
-        }
-        timeline.push(eval('judgment_main'+(n_block-1)));
+        // timeline.push(instruction2);
+        // for (b=0; b<n_block-1; b++) {          
+        //     timeline.push(eval('judgment_main'+(b)));
+        //     timeline.push(test_break);
+        // }
+        // timeline.push(eval('judgment_main'+(n_block-1)));
+        // timeline.push(demographic_page);
         
         // * for non-webp browsers * //
         var webp = Modernizr.webp;       
@@ -300,10 +323,10 @@
             // exclusions: { webp: true },             
             timeline: timeline,           
             preload_images: stimuli,  
-            show_progress_bar: true,                      
+            show_progress_bar: true, 
+            auto_update_progress_bar: false,                     
             on_finish: function() {
-                jsPsych.data.displayData(); 
-
+                
                 // get data values
                 var data = {experiment:"sceneWheel_similarityJudgment",
                             repo:"sceneWheel_similarityJudgment",
