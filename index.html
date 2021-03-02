@@ -16,6 +16,7 @@
         <script src="jspsych-6.2.0/plugins/jspsych-external-html.js"></script>
         <script src="jspsych-6.2.0/plugins/jspsych-html-button-response.js"></script>
         <script src="jspsych-6.2.0/plugins/jspsych-html-keyboard-response.js"></script>
+        <script src="jspsych-6.2.0/plugins/jspsych-survey-html-form.js"></script>
         <link href='jspsych-6.2.0/css/jspsych.css' rel='stylesheet' type="text/css">
         <script src="https://www.gstatic.com/firebasejs/8.2.7/firebase-app.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.2.7/firebase-auth.js"></script>
@@ -309,25 +310,57 @@
         }
 
         // * demographic page  * //
-        var demographic_page = {
-            type: 'html-button-response',
-            stimulus: html='<p style="color: black; font-size: 20px;">'
-                +'You are done! Now we would like to collect your demographic information.</br>'
-                +'Click the <b>Demographic questions</b> below to complete the questionnaires.</br>'
-                +'After completing the questionnaires, please <b>come back</b> to this page and press <b>Done</b> at the bottom.</br></br>'
-                +'<a href="https://redcap.utoronto.ca/surveys/index.php?s=DDT8ME9KFL&study_name=scene_wheel_similarityJudgment" target="_blank">'
-                +'Demographic questions </a></br></br></p>',
-            choices: ['Done'], 
-            data: {disp_type: 'demographic-link'}        
+        // definiting response scales that can be used.
+        var gender_options = ['Male', 'Female', 'Other'];
+        var handed_option = ['Right', 'Left'];
+        var page_2_options = ["Strongly Disagree", "Disagree", "Somewhat Disagree", "Neural", "Somewhat Agree", "Agree", "Strongly Agree"];
+        var dem_info = {
+            type: 'survey-html-form',
+            preamble: '<p><b>We would like to collect the basic information below.</b></p>',
+            html: '<p style="font-size:12pt;> Gender: '+
+                '<input name="gender" type="radio" value="male"  /><label for="male">Male</label>'+
+                '<input name="gender" type="radio" value="female"  /><label for="female">Female</label>'+
+                '<input name="gender" type="radio" value="other"  /><label for="other">Other</label></br>'+
+                // age
+                'Age: <input name="age" type="text"/></br>'+
+                // handedness
+                'Handedness: '+
+                '<input name="hand" type="radio" value="right"  /><label for="right">Right</label>'+
+                '<input name="hand" type="radio" value="left"  /><label for="left">Left</label></br></br>'+
+                'Please respond to the following quetions by checking "Yes" or "No": </br>'+
+                // lenses
+                '</br>Do you wear corrective lenses?: '+
+                '<input name="lense" type="radio" value="yes" /><label for="yes">Yes</label>'+
+                '<input name="lense" type="radio" value="no" /><label for="no">No</label>'+
+                '</br>If yes, specify glasses or contacts:  <input name="hearaidtype" type="text" /></br>'+                
+                // hearing aids
+                '</br>Do you use hearing aid?: '+
+                '<input name="hear" type="radio" value="yes" /><label for="yes">Yes</label>'+
+                '<input name="hear" type="radio" value="no" /><label for="no">No</label>'+
+                '</br>If yes, please specify what kinds: <input name="hearaidtype" type="text" /></br>'+
+                // brain malfunction
+                '</br>Do you have any known brain malfunctions?: '+
+                '<input name="hear" type="radio" value="yes" /><label for="yes">Yes</label>'+
+                '<input name="hear" type="radio" value="no" /><label for="no">No</label>'+
+                '</br>If yes, please specify type and location: <input name="hearaidtype" type="text" /></br>'+
+                // color blindness
+                '</br>Do you experience color blindness?: '+
+                '<input name="color" type="radio" value="yes" /><label for="yes">Yes</label>'+
+                '<input name="color" type="radio" value="no" /><label for="no">No</label>'+
+                // neurological conditions
+                '</br>Do you have (or have you had) any neurological conditions?: '+
+                '<input name="neuro" type="radio" value="yes" /><label for="yes">Yes</label>'+
+                '<input name="neuro" type="radio" value="no" /><label for="no">No</label></br></p>'
         }
+
         
         // * Debriefing form * //       
-        // var debrief_page = {
-        //     type: 'external-html',
-        //     url: "materials/debriefing_letter.html",
-        //     cont_btn: "finish",            
-        //     data: {disp_type: 'debriefing_page'}
-        // }
+        var debrief_page = {
+            type: 'external-html',
+            url: "debriefing/debriefing_letter.html",
+            cont_btn: "finish",            
+            data: {disp_type: 'debriefing_page'}
+        }
         
               
 
@@ -335,16 +368,17 @@
         timeline = [];
         // timeline.push(consent_inst);
         // timeline.push(consent_page);
-        timeline.push(instruction1);        
-        timeline.push(judgment_prac);
+        // timeline.push(instruction1);        
+        // timeline.push(judgment_prac);
         // timeline.push(instruction2);
         // for (b=0; b<n_block-1; b++) {          
         //     timeline.push(eval('judgment_main'+(b)));
         //     timeline.push(test_break);
         // }
-        // timeline.push(eval('judgment_main'+(n_block-1)));
+        // timeline.push(eval('judgment_main'+(n_block-1)));        
+        timeline.push(dem_info);
         timeline.push(save_data);
-        timeline.push(demographic_page);
+        timeline.push(debrief_page);
         
         // * for non-webp browsers * //
         var webp = Modernizr.webp;       
