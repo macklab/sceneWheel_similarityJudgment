@@ -29,6 +29,7 @@
         var firebaseConfig = {
             apiKey: "AIzaSyCCfqbctlvGARj_IPbIOVAXlI5nv7gE-78",
             authDomain: "scenewheel-simjudge.firebaseapp.com",
+            databaseURL: "https://scenewheel-simjudge-default-rtdb.firebaseio.com",
             projectId: "scenewheel-simjudge",
             storageBucket: "scenewheel-simjudge.appspot.com",
             messagingSenderId: "657235385952",
@@ -290,7 +291,7 @@
                     console.log(response.success);
                   }
                 };
-                xhr.send(JSON.stringify(data));  
+                xhr.send(JSON.stringify(data)); 
 
                 // send data to firebase                      
                 var tmp = new Uint32Array(1);
