@@ -190,6 +190,11 @@
                 disp_type: 'likert_display',                
                 radius: jsPsych.timelineVariable('radius'),
                 pair: jsPsych.timelineVariable('stim_list'),                                   
+            },
+            on_finish: function() {
+                // progress bar
+                var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
+                jsPsych.setProgressBar(curr_progress_bar_value + (1/n_trials));
             }
         }
 
