@@ -329,7 +329,7 @@
             type: 'html-keyboard-response',
             stimulus: html = '<p area-selected="font-size:15px;"> You are done! Your confirmation code is: '+
                 '<b>'+Math.floor(1000 + Math.random() * 9000)+'</b>'+
-                '<p>Check out the debriefing! Thank you for participating!</p>'+                          
+                '<p>Thank you for participating!</p>'+                          
                 '<embed src="debriefing/Debriefing.pdf" style="width:80vw; height:70vh;"></embed>',
             choices: jsPsych.NO_KEYS,        
             data: {disp_type: 'debriefing_page'},
@@ -341,7 +341,7 @@
                 firebase.database().ref(dbpath).set({
                     experiment:"sceneWheel_similarityJudgment",
                     repo:"sceneWheel_similarityJudgment",                    
-                    // turkID: turkInfo,                    
+                    turkID: turkInfo,                    
                     data:jsPsych.data.get().values(),
                     browser_info:html,                    
                     date: Date()
