@@ -323,8 +323,7 @@
             }           
         }
               
-        // * Debriefing form * //
-        
+        // * Debriefing form * //       
                   
         var debrief_page = {
             type: 'html-keyboard-response',
@@ -336,12 +335,24 @@
             data: {disp_type: 'debriefing_page'}           
         }
         
+        var debrief_page_withHIT = {
+            type: 'html-keyboard-response',
+            stimulus: html = '<p area-selected="font-size:15px;"> You are done! Your confirmation code is: '+
+                '<b>'+Math.floor(1000 + Math.random() * 9000)+'</b>'+
+                '<p>Please enter this code</p><input type="text" id="code"></input>'+
+                '<button onclick="jsPsych.turk.submitToTurk({code: document.getElementByID("code").value});">Submit HIT</button>'+
+                '<p>Check out the debriefing! Thank you for participating!</p>'+                          
+                '<embed src="debriefing/Debriefing.pdf" style="width:80vw; height:70vh;"></embed>',
+            choices: jsPsych.NO_KEYS,        
+            data: {disp_type: 'debriefing_page'}           
+        }
+
         // * send HIT * //
-        var send_HIT = function sendData() {
-                jsPsych.turk.submitToTurk({
-                    code: document.getElementById('code').value
-                });
-            } 
+        function sendData() {
+            jsPsych.turk.submitToTurk({
+                code: document.getElementById('code').value
+            });
+        } 
         var debrief_withCC = {
             type: 'external-html',
             url: 'debriefing/debriefing_letter.html'            
@@ -369,7 +380,7 @@
         //     type: 'fullscreen',
         //     fullscreen_mode: false
         // });
-        timeline.push(debrief_page);        
+        timeline.push(debrief_page_withHIT);        
         
        
         jsPsych.init({                   
@@ -385,7 +396,7 @@
                     experiment:"sceneWheel_similarityJudgment",
                     repo:"sceneWheel_similarityJudgment",                    
                     // turkID: turkInfo,                    
-                    // data:jsPsych.data.getLastTrialData(),                    
+                    data:jsPsych.data.getLastTrialData(),                    
                     date: Date()
                 });
             }        
