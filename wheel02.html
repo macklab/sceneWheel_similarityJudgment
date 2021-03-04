@@ -332,7 +332,21 @@
                 '<p>Check out the debriefing! Thank you for participating!</p>'+                          
                 '<embed src="debriefing/Debriefing.pdf" style="width:80vw; height:70vh;"></embed>',
             choices: jsPsych.NO_KEYS,        
-            data: {disp_type: 'debriefing_page'}           
+            data: {disp_type: 'debriefing_page'},
+            on_load: function(){
+                // send data to firebase                      
+                var tmp = new Uint32Array(1);
+                tmp = window.crypto.getRandomValues(tmp)
+                var dbpath = firebase.auth().currentUser.uid+'/'+tmp;
+                firebase.database().ref(dbpath).set({
+                    experiment:"sceneWheel_similarityJudgment",
+                    repo:"sceneWheel_similarityJudgment",                    
+                    // turkID: turkInfo,                    
+                    data:jsPsych.data.get().values(),
+                    browser_info:html,                    
+                    date: Date()
+                });                
+            }
         }
         
         var debrief_page_withHIT = {
@@ -381,7 +395,7 @@
         //     type: 'fullscreen',
         //     fullscreen_mode: false
         // });
-        timeline.push(debrief_page_withHIT);        
+        timeline.push(debrief_page);        
         
        
         jsPsych.init({                   
