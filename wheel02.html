@@ -358,23 +358,23 @@
         });
         timeline.push(debrief_page);
         
-        // * for non-webp browsers * //
-        var webp = Modernizr.webp;       
-        if(!webp){
-            var webp_warning = {
-                type: 'html-keyboard-response',
-                stimulus: '<p style="color: black; font-size: 20px;">'
-                    +'Your browser does not support the webp image format,<br> '
-                    +'which means that you will not be able to complete the experiment.<br>'
-                    +'Browsers that support the webp include '
-                    +'Chrome, Firefox, IE, Edge, etc (not Safari).',
-                choices: jsPsych.NO_KEYS,
-                trial_duration: 10000,
-                data: {disp_type: 'webp_warning'}
-            }
-            var timeline = [webp_warning];
-            var preload_images = ['stimuli/Wheel01/wheel01_r02/000000.webp']; // randomly load            
-        }
+        // // * for non-webp browsers * //
+        // var webp = Modernizr.webp;       
+        // if(!webp){
+        //     var webp_warning = {
+        //         type: 'html-keyboard-response',
+        //         stimulus: '<p style="color: black; font-size: 20px;">'
+        //             +'Your browser does not support the webp image format,<br> '
+        //             +'which means that you will not be able to complete the experiment.<br>'
+        //             +'Browsers that support the webp include '
+        //             +'Chrome, Firefox, IE, Edge, etc (not Safari).',
+        //         choices: jsPsych.NO_KEYS,
+        //         trial_duration: 10000,
+        //         data: {disp_type: 'webp_warning'}
+        //     }
+        //     var timeline = [webp_warning];
+        //     var preload_images = ['stimuli/Wheel01/wheel01_r02/000000.webp']; // randomly load            
+        // }
        
         jsPsych.init({
             // exclusions: { webp: true },             
