@@ -1,0 +1,12 @@
+<p>Enter the code you were given:</p>
+<input type="text" id="code"></input>
+<button onclick="sendData();">Submit HIT</button>
+
+<script>
+function sendData() {
+  jsPsych.turk.submitToTurk({
+    code: document.getElementById('code').value
+  });
+}
+</script>
+
