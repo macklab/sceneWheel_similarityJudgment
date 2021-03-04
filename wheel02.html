@@ -326,20 +326,15 @@
             }           
         }
               
-        // * Debriefing form * //
-        
-        function sendData() {
-            jsPsych.turk.submitToTurk({
-            code: document.getElementById('code').value
-            });
-        }           
+        // * Debriefing form * //                 
         var debrief_page = {
             type: 'html-keyboard-response',
             stimulus: html = '<p area-selected="font-size:15px;"> You are done! Your confirmation code is: '+
-                '<b>'+confirmation_number+'</b></br>Enter the code here: '+    
+                '<b>'+confirmation_number+'</b></br>Enter the code here: '+  
                 '<input type="text" id="code"></input><button onclick="sendData();">Submit HIT</button>'+
                 '<p>If you have submitted HIT, you can leave this page. Thank you for participating!</p>'+                          
-                '<embed src="debriefing/Debriefing.pdf" style="width:80vw; height:70vh;"></embed>',
+                '<embed src="debriefing/Debriefing.pdf" style="width:80vw; height:70vh;"></embed>'+
+                'function sendData() {jsPsych.turk.submitToTurk({code: document.getElementById("code").value});}',
             choices: jsPsych.NO_KEYS,        
             data: {disp_type: 'debriefing_page'}
         }
