@@ -237,7 +237,7 @@
         var dem_info = {
             type: 'survey-html-form',
             preamble: '<p><b>Task is done! Now we would like to collect the basic information below.</b></p>',
-            html: '<p style="font-size:12pt;> Gender: '+
+            html: '<p style="font-size:12pt;"> Gender: '+
                 '<input name="gender" type="radio" value="male"  /><label for="male">Male</label>'+
                 '<input name="gender" type="radio" value="female"  /><label for="female">Female</label>'+
                 '<input name="gender" type="radio" value="other"  /><label for="other">Other</label></br>'+
@@ -341,9 +341,7 @@
         timeline.push({
             type: 'fullscreen',
             fullscreen_mode: true
-        });
-        // timeline.push(consent_inst);
-        // timeline.push(consent_page);
+        });        
         timeline.push(instruction1);        
         timeline.push(judgment_prac);
         timeline.push(instruction2);
