@@ -333,10 +333,7 @@
                 '<p>Check out the debriefing! Thank you for participating!</p>'+                          
                 '<embed src="debriefing/Debriefing.pdf" style="width:80vw; height:70vh;"></embed>',
             choices: jsPsych.NO_KEYS,        
-            data: {disp_type: 'debriefing_page'},
-            on_start: function(trial){
-                trial.confirmation_code = html;
-            },
+            data: {disp_type: 'debriefing_page'},            
             on_finish: function(){
                 // send CC to firebase                      
                 var tmp = new Uint32Array(1);
@@ -344,7 +341,8 @@
                 var dbpath = firebase.auth().currentUser.uid+'/'+tmp;
                 firebase.database().ref(dbpath).set({
                     experiment:"sceneWheel_similarityJudgment",
-                    repo:"sceneWheel_similarityJudgment",                    
+                    repo:"sceneWheel_similarityJudgment",  
+                    data:jsPsych.data.get().values(),                  
                     turkID: turkInfo,
                     confirmation_code: trial.confirmation_code,
                     date: Date()
