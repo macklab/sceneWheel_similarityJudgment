@@ -340,7 +340,7 @@
             stimulus: html = '<p area-selected="font-size:15px;"> You are done! Your confirmation code is: '+
                 '<b>'+Math.floor(1000 + Math.random() * 9000)+'</b>'+
                 '<p>Please enter this code</p><input type="text" id="code"></input>'+
-                '<button onclick="jsPsych.turk.submitToTurk({code: document.getElementByID("code").value});">Submit HIT</button>'+
+                '<button onclick="sendData();">Submit HIT</button>'+
                 '<p>Check out the debriefing! Thank you for participating!</p>'+                          
                 '<embed src="debriefing/Debriefing.pdf" style="width:80vw; height:70vh;"></embed>',
             choices: jsPsych.NO_KEYS,        
@@ -352,6 +352,7 @@
             jsPsych.turk.submitToTurk({
                 code: document.getElementById('code').value
             });
+            // console.log(document.getElementById('code').value); 
         } 
         var debrief_withCC = {
             type: 'external-html',
