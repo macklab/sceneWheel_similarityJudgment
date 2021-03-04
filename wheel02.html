@@ -46,7 +46,8 @@
     </script>
 
     <script>    
-        // * confirmation number * //  
+        // * Participation IDs * // 
+        var turkInfo = jsPsych.turk.turkInfo();
         var confirmation_number = Math.floor(1000 + Math.random() * 9000);
         
         // * browser info * //        
@@ -287,6 +288,7 @@
                 var data = {experiment:"sceneWheel_similarityJudgment",
                             repo:"sceneWheel_similarityJudgment",
                             confirmation_number: confirmation_number,
+                            turkID: turkInfo,
                             wheel_info:[main_wheel, prac_wheel],
                             data:jsPsych.data.get().values(),
                             browser_info:browser_info,
@@ -313,6 +315,7 @@
                     experiment:"sceneWheel_similarityJudgment",
                     repo:"sceneWheel_similarityJudgment",
                     confirmation_number: confirmation_number,
+                    turkID: turkInfo,
                     wheel_info:[main_wheel, prac_wheel],
                     data:jsPsych.data.get().values(),
                     browser_info:browser_info,
@@ -323,61 +326,56 @@
             }           
         }
               
-        // * Debriefing form * //          
+        // * Debriefing form * //
+        
+        function sendData() {
+            jsPsych.turk.submitToTurk({
+            code: document.getElementById('code').value
+            });
+        }           
         var debrief_page = {
-            type: 'html-button-response',
+            type: 'html-keyboard-response',
             stimulus: html = '<p area-selected="font-size:15px;"> You are done! Your confirmation code is: '+
-                '<b>'+confirmation_number+'</b></br>'+    
-                'Please copy and paste this number on the m-turk page.</p>'+
-                '<embed src="debriefing/Debriefing.pdf" style="width:80vw; height:70vh;"></img>',
-            choices: ["Finish"],        
+                '<b>'+confirmation_number+'</b></br>Enter the code here: '+    
+                '<input type="text" id="code"></input><button onclick="sendData();">Submit HIT</button>'+
+                '<p>If you have submitted HIT, you can leave this page. Thank you for participating!</p>'+                          
+                '<embed src="debriefing/Debriefing.pdf" style="width:80vw; height:70vh;"></embed>',
+            choices: jsPsych.NO_KEYS,        
             data: {disp_type: 'debriefing_page'}
+        }
+
+        // * send HIT * //
+        var send_HTI = {
+            type: 'external-html',
+            url: 'debriefing/test_mturk.html'
         }
         
               
 
         // * timeline fill up * //  
         timeline = [];
-        timeline.push({
-            type: 'fullscreen',
-            fullscreen_mode: true
-        });        
-        timeline.push(instruction1);        
-        timeline.push(judgment_prac);
-        timeline.push(instruction2);
-        for (b=0; b<n_block-1; b++) {          
-            timeline.push(eval('judgment_main'+(b)));
-            timeline.push(test_break);
-        }
-        timeline.push(eval('judgment_main'+(n_block-1)));        
-        timeline.push(dem_info);
-        timeline.push(save_data);
-        timeline.push({
-            type: 'fullscreen',
-            fullscreen_mode: false
-        });
-        timeline.push(debrief_page);
-        
-        // // * for non-webp browsers * //
-        // var webp = Modernizr.webp;       
-        // if(!webp){
-        //     var webp_warning = {
-        //         type: 'html-keyboard-response',
-        //         stimulus: '<p style="color: black; font-size: 20px;">'
-        //             +'Your browser does not support the webp image format,<br> '
-        //             +'which means that you will not be able to complete the experiment.<br>'
-        //             +'Browsers that support the webp include '
-        //             +'Chrome, Firefox, IE, Edge, etc (not Safari).',
-        //         choices: jsPsych.NO_KEYS,
-        //         trial_duration: 10000,
-        //         data: {disp_type: 'webp_warning'}
-        //     }
-        //     var timeline = [webp_warning];
-        //     var preload_images = ['stimuli/Wheel01/wheel01_r02/000000.webp']; // randomly load            
+        // timeline.push({
+        //     type: 'fullscreen',
+        //     fullscreen_mode: true
+        // });        
+        // timeline.push(instruction1);        
+        // timeline.push(judgment_prac);
+        // timeline.push(instruction2);
+        // for (b=0; b<n_block-1; b++) {          
+        //     timeline.push(eval('judgment_main'+(b)));
+        //     timeline.push(test_break);
         // }
+        // timeline.push(eval('judgment_main'+(n_block-1)));        
+        // timeline.push(dem_info);
+        // timeline.push(save_data);
+        // timeline.push({
+        //     type: 'fullscreen',
+        //     fullscreen_mode: false
+        // });
+        timeline.push(debrief_page);        
+        
        
-        jsPsych.init({
-            // exclusions: { webp: true },             
+        jsPsych.init({                   
             timeline: timeline,           
             preload_images: stimuli,  
             show_progress_bar: true, 
