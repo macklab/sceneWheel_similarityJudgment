@@ -282,11 +282,14 @@
             stimulus: '<p>We are saving your data, please stay on this page.</p>',
             choices: jsPsych.NO_KEYS,
             trial_duration: 3000,
-            on_finish: function(){              
+            data: { // create confirmation code with data saving
+                conf_code: Math.floor(1000 + Math.random() * 9000)
+            },            
+            on_finish: function(){                
                 // get data values
                 var data = {experiment:"sceneWheel_similarityJudgment",
                             repo:"sceneWheel_similarityJudgment",                            
-                            turkID: turkInfo,
+                            turkID: turkInfo,                            
                             wheel_info:[main_wheel, prac_wheel],
                             data:jsPsych.data.get().values(),
                             browser_info:browser_info,
@@ -312,67 +315,33 @@
                 firebase.database().ref(dbpath).set({
                     experiment:"sceneWheel_similarityJudgment",
                     repo:"sceneWheel_similarityJudgment",                    
-                    turkID: turkInfo,
+                    turkID: turkInfo,                    
                     wheel_info:[main_wheel, prac_wheel],
                     data:jsPsych.data.get().values(),
                     browser_info:browser_info,
                     interaction_data:jsPsych.data.getInteractionData().values(),
                     exp_condition:e_cond,
                     date: Date()
-                });
+                });                
             }           
         }
+        
               
-        // * Debriefing form * //       
+        // * Debriefing form * //            
                   
         var debrief_page = {
             type: 'html-keyboard-response',
-            stimulus: html = '<p area-selected="font-size:15px;"> You are done! Your confirmation code is: '+
-                '<b>'+Math.floor(1000 + Math.random() * 9000)+'</b>'+
+            stimulus: function(){                            
+                var html = 
+                '<p area-selected="font-size:15px;"> You are done! Your confirmation code is: '+
+                '<b>'+jsPsych.data.getLastTrialData().values()[0].conf_code+'</b>'+
                 '<p>Thank you for participating!</p>'+                          
-                '<embed src="debriefing/Debriefing.pdf" style="width:80vw; height:70vh;"></embed>',
+                '<embed src="debriefing/Debriefing.pdf" style="width:80vw; height:70vh;"></embed>'
+                return html;
+            },
             choices: jsPsych.NO_KEYS,        
-            data: {disp_type: 'debriefing_page'},
-            on_load: function(){
-                // send data to firebase                      
-                var tmp = new Uint32Array(1);
-                tmp = window.crypto.getRandomValues(tmp)
-                var dbpath = firebase.auth().currentUser.uid+'/'+tmp;
-                firebase.database().ref(dbpath).set({
-                    experiment:"sceneWheel_similarityJudgment",
-                    repo:"sceneWheel_similarityJudgment",                    
-                    turkID: turkInfo,                    
-                    data:jsPsych.data.get().values(),
-                    browser_info:html,                    
-                    date: Date()
-                });                
-            }
-        }
-        
-        var debrief_page_withHIT = {
-            type: 'html-keyboard-response',
-            stimulus: html = '<p area-selected="font-size:15px;"> You are done! Your confirmation code is: '+
-                '<b>'+Math.floor(1000 + Math.random() * 9000)+'</b>'+
-                '<p>Please enter this code</p><input type="text" id="code"></input>'+
-                '<button onclick="sendData();">Submit HIT</button>'+
-                '<p>Check out the debriefing! Thank you for participating!</p>'+                          
-                '<embed src="debriefing/Debriefing.pdf" style="width:80vw; height:70vh;"></embed>',
-            choices: jsPsych.NO_KEYS,        
-            data: {disp_type: 'debriefing_page'}           
-        }
-
-        // * send HIT * //
-        function sendData() {
-            jsPsych.turk.submitToTurk({
-                code: document.getElementById('code').value
-            });
-            // console.log(document.getElementById('code').value); 
-        } 
-        var debrief_withCC = {
-            type: 'external-html',
-            url: 'debriefing/debriefing_letter.html'            
-        }
-        
+            data: {disp_type: 'debriefing_page'}            
+        }       
               
 
         // * timeline fill up * //  
@@ -390,7 +359,7 @@
         // }
         // timeline.push(eval('judgment_main'+(n_block-1)));        
         // timeline.push(dem_info);
-        // timeline.push(save_data);
+        timeline.push(save_data);
         // timeline.push({
         //     type: 'fullscreen',
         //     fullscreen_mode: false
@@ -402,7 +371,7 @@
             timeline: timeline,           
             preload_images: stimuli,  
             show_progress_bar: true, 
-            auto_update_progress_bar: false                   
+            auto_update_progress_bar: false               
         });      
        
     
