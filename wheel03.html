@@ -334,7 +334,7 @@
             stimulus: function(){                            
                 var html = 
                 '<p area-selected="font-size:15px;"> You are done! Your confirmation code is: '+
-                '<b>'+jsPsych.data.getLastTrialData().values()[0].conf_code+'</b>'+
+                '<b>'+save_data.data.conf_code+'</b>'+
                 '<p>Thank you for participating!</p>'+                          
                 '<embed src="debriefing/Debriefing.pdf" style="width:80vw; height:70vh;"></embed>'
                 return html;
