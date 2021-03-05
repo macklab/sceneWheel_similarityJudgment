@@ -351,14 +351,14 @@
             fullscreen_mode: true
         });        
         timeline.push(instruction1);        
-        timeline.push(judgment_prac);
-        timeline.push(instruction2);
-        for (b=0; b<n_block-1; b++) {          
-            timeline.push(eval('judgment_main'+(b)));
-            timeline.push(test_break);
-        }
-        timeline.push(eval('judgment_main'+(n_block-1)));        
-        timeline.push(dem_info);
+        // timeline.push(judgment_prac);
+        // timeline.push(instruction2);
+        // for (b=0; b<n_block-1; b++) {          
+        //     timeline.push(eval('judgment_main'+(b)));
+        //     timeline.push(test_break);
+        // }
+        // timeline.push(eval('judgment_main'+(n_block-1)));        
+        // timeline.push(dem_info);
         timeline.push(save_data);
         timeline.push({
             type: 'fullscreen',
